@@ -28,12 +28,22 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const allToys = client.db('toyGalaxy').collection('toyCollection')
+    const DB = client.db('toyGalaxy')
+    const allToys = DB.collection('toyCollection')
+    const addedToys = DB.collection('addedToys')
 
 
-    const marvelCollection = client.db('toyGalaxy').collection('marvel')
-    const dcCollection = client.db('toyGalaxy').collection('dc')
-    const starWarsCollection = client.db('toyGalaxy').collection('starWars')
+
+    app.post('/insertItem', async (req, res) =>{
+      const addToy = req.body
+     const result =  await addedToys.insertOne(addToy)
+     res.send(result)
+    })
+
+    app.get('/insertItem', async (req, res) =>{
+      const result = await addedToys.find().toArray()
+      res.send(result)
+    })
     
 
 
