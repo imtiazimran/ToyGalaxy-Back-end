@@ -59,18 +59,28 @@ async function run() {
       res.send(result)
     })
 
-    app.patch('/insertItem/:id', async (req, res) =>{
+    app.patch('/insertItem/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
-      const updatedInfo = req.body
-      const upSert = {
-        $set:{
-          status: updatedInfo.status
+      const query = { _id: new ObjectId(id) };
+      const updatedValues = req.body;
+      const update = {
+        $set: {
+          price: updatedValues.price,
+          qty: updatedValues.qty,
+          details: updatedValues.details
         }
+      };
+    
+      try {
+        const result = await addedToys.updateOne(query, update);
+        
+        res.send(result);
+      } catch (error) {
+        console.error("Error updating item:", error);
+        res.status(500).send("Error updating item");
       }
-      const result = await addedToys.updateOne(query, upSert)
-      res.send(result)
-    })
+    });
+    
 
     app.get('/myToys', async (req, res) => {
       const filter = req.query.email;
