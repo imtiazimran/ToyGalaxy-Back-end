@@ -59,7 +59,18 @@ async function run() {
       res.send(result)
     })
 
-    app.patch('/insertItem/:id', )
+    app.patch('/insertItem/:id', async (req, res) =>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const updatedInfo = req.body
+      const upSert = {
+        $set:{
+          status: updatedInfo.status
+        }
+      }
+      const result = await addedToys.updateOne(query, upSert)
+      res.send(result)
+    })
 
     app.get('/myToys', async (req, res) => {
       const filter = req.query.email;
