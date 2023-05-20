@@ -52,9 +52,17 @@ async function run() {
       res.send(result)
     })
 
+    app.delete('/insertItem/:id', async (req, res) =>{
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await addedToys.deleteOne(query)
+      res.send(result)
+    })
+
+    app.patch('/insertItem/:id', )
+
     app.get('/myToys', async (req, res) => {
       const filter = req.query.email;
-
       try {
         const result = await addedToys.find({ sellarEmail: filter }).toArray();
         res.send(result);
