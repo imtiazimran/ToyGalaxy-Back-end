@@ -54,11 +54,9 @@ async function run() {
 
     app.get('/myToys', async (req, res) => {
       const filter = req.query.email;
-      console.log(filter)
 
       try {
         const result = await addedToys.find({ sellarEmail: filter }).toArray();
-        console.log(result);
         res.send(result);
       } catch (error) {
         console.error(error);
