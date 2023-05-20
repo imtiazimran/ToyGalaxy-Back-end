@@ -11,7 +11,7 @@ app.use(express.json())
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@cluster0.5ujci4u.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -34,22 +34,44 @@ async function run() {
 
 
 
-    app.post('/insertItem', async (req, res) =>{
+    app.post('/insertItem', async (req, res) => {
       const addToy = req.body
-     const result =  await addedToys.insertOne(addToy)
-     res.send(result)
+      const result = await addedToys.insertOne(addToy)
+      res.send(result)
     })
 
-    app.get('/insertItem', async (req, res) =>{
+    app.get('/insertItem', async (req, res) => {
       const result = await addedToys.find().toArray()
       res.send(result)
     })
-    
+
+    app.get('/insertItem/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await addedToys.findOne(query)
+      res.send(result)
+    })
+
+    app.get('/myToys', async (req, res) => {
+      const filter = req.query.email;
+      console.log(filter)
+
+      try {
+        const result = await addedToys.find({ sellarEmail: filter }).toArray();
+        console.log(result);
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+      }
+    });
 
 
-    app.get('/allToys', async(req, res) =>{
-        const result = await allToys.find().toArray()
-        res.send(result)
+
+
+    app.get('/allToys', async (req, res) => {
+      const result = await allToys.find().toArray()
+      res.send(result)
     })
 
     // Send a ping to confirm a successful connection
@@ -66,10 +88,10 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req, res) =>{
-    res.send("welcome to Our Toy Shop")
+app.get('/', (req, res) => {
+  res.send("welcome to Our Toy Shop")
 })
 
-app.listen(port, () =>{
-    console.log(`toy server is running on: ${port}`)
+app.listen(port, () => {
+  console.log(`toy server is running on: ${port}`)
 })
