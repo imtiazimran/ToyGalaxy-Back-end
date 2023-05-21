@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const DB = client.db('toyGalaxy')
     const allToys = DB.collection('toyCollection')
@@ -40,8 +40,9 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/insertItem', async (req, res) => {
-      const result = await addedToys.find().toArray()
+    app.get('/insertItem/:limit', async (req, res) => {
+      const limit = req.params.limit
+      const result = await addedToys.find().limit(parseInt(limit)).toArray()
       res.send(result)
     })
 
@@ -102,7 +103,7 @@ async function run() {
     })
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
@@ -121,6 +122,6 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
   console.log(`toy server is running on: ${port}`)
-})
+});
 
 module.exports = app;
