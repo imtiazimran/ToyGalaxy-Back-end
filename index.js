@@ -122,3 +122,5 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`toy server is running on: ${port}`)
 })
+
+module.exports = app;
