@@ -42,7 +42,13 @@ async function run() {
 
     app.get('/insertItem/:limit', async (req, res) => {
       const limit = req.params.limit
-      const result = await addedToys.find().limit(parseInt(limit)).toArray()
+      let result;
+      if (limit === "All") {
+        result = await addedToys.find().toArray()
+
+      } else {
+        result = await addedToys.find().limit(parseInt(limit)).toArray()
+      }
       res.send(result)
     })
 
@@ -53,9 +59,9 @@ async function run() {
       res.send(result)
     })
 
-    app.delete('/insertItem/:id', async (req, res) =>{
+    app.delete('/insertItem/:id', async (req, res) => {
       const id = req.params.id
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await addedToys.deleteOne(query)
       res.send(result)
     })
@@ -71,28 +77,42 @@ async function run() {
           details: updatedValues.details
         }
       };
-    
+
       try {
         const result = await addedToys.updateOne(query, update);
-        
+
         res.send(result);
       } catch (error) {
         console.error("Error updating item:", error);
         res.status(500).send("Error updating item");
       }
     });
-    
+
 
     app.get('/myToys', async (req, res) => {
       const filter = req.query.email;
+      const sort = req.query.sort; // The sort parameter from the request query
+    
       try {
-        const result = await addedToys.find({ sellarEmail: filter }).toArray();
+        const toysCollection = DB.collection("addedToys");
+        let result;
+    
+        if (sort === "asc") {
+          result = await toysCollection.find({ sellarEmail: filter }).sort({ name: 1 }).toArray();
+        } else if (sort === "desc") {
+          result = await toysCollection.find({ sellarEmail: filter }).sort({ name: -1 }).toArray();
+        } else {
+          // If no sorting specified, fetch toys without sorting
+          result = await toysCollection.find({ sellarEmail: filter }).toArray();
+        }
+    
         res.send(result);
       } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
       }
     });
+    
 
 
 
