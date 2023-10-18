@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 const port = process.env.PORT || 9999
 require('dotenv').config()
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // midleware
 
@@ -11,7 +12,10 @@ app.use(express.json())
 
 
 
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
+
+
+
 const uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@cluster0.5ujci4u.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -31,6 +35,31 @@ async function run() {
     const DB = client.db('toyGalaxy')
     const allToys = DB.collection('toyCollection')
     const addedToys = DB.collection('addedToys')
+    const cart = DB.collection('cart')
+
+
+
+
+
+    app.get('/cart', async (req, res) => {
+      const result = await cart.find().toArray()
+      res.send(result)
+    })
+
+    app.post('/cart', async (req, res) => {
+      const cartItem = req.body
+      const result = await cart.insertOne(cartItem)
+      res.send(result)
+    })
+
+    app.delete('/cart/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await cart.deleteOne(query)
+      console.log(result);
+      res.send(result)
+    })
+
 
 
 
@@ -92,11 +121,11 @@ async function run() {
     app.get('/myToys', async (req, res) => {
       const filter = req.query.email;
       const sort = req.query.sort; // The sort parameter from the request query
-    
+
       try {
         const toysCollection = DB.collection("addedToys");
         let result;
-    
+
         if (sort === "asc") {
           result = await toysCollection.find({ sellarEmail: filter }).sort({ name: 1 }).toArray();
         } else if (sort === "desc") {
@@ -105,14 +134,14 @@ async function run() {
           // If no sorting specified, fetch toys without sorting
           result = await toysCollection.find({ sellarEmail: filter }).toArray();
         }
-    
+
         res.send(result);
       } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
       }
     });
-    
+
 
 
 
