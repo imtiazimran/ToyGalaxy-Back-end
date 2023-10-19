@@ -36,9 +36,15 @@ async function run() {
     const allToys = DB.collection('toyCollection')
     const addedToys = DB.collection('addedToys')
     const cart = DB.collection('cart')
+    const review = DB.collection('review')
+
+    
 
 
-
+    app.get('/review', async(req, res)=>{
+      const result = await review.find().toArray()
+      res.send(result)
+    })
 
 
     app.get('/cart/:email', async (req, res) => {
