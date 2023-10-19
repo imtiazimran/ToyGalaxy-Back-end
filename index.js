@@ -41,8 +41,10 @@ async function run() {
 
 
 
-    app.get('/cart', async (req, res) => {
-      const result = await cart.find().toArray()
+    app.get('/cart/:email', async (req, res) => {
+      const email = req.params.email
+      const query = {user : email}
+      const result = await cart.find(query).toArray()
       res.send(result)
     })
 
